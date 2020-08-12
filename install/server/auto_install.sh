@@ -93,7 +93,7 @@ python manage.py migrate
 echo "please create your monster' super admin:"
 #python manage.py createsuperuser
 source /etc/profile
-/usr/bin/mysql -e "insert into monster.accounts_userinfo (password,username,email,is_active,is_superuser) values ('pbkdf2_sha256$36000$ecnlwIQUK6RW$sfo1ygl7eLuvQw6/83oM1KrJ6Ctquq2W1GYDTCsxSuw=','admin','admin@126.com',1,1);"
+/usr/bin/mysql -e "insert into monster.accounts_userinfo (password,username,email,is_active,is_superuser) values ('pbkdf2_sha256$36000$ecnlwIQUK6RW$sfo1ygl7eLuvQw6/83oM1KrJ6Ctquq2W1GYDTCsxSuw=','root','monster0812@gmail.com',1,1);"
 scp $monster_dir/install/server/monster.service /usr/lib/systemd/system
 /bin/systemctl enable monster.service
 
