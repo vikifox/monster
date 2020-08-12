@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+{% block self_head_css_js %}
+    <script src="/static/layer/layer.js"></script>
+{% endblock %}
+{% block content %}
+<script>
+    window.onload=init;
+    function init() {
+        showhide(7);
+    }
+    function showhide(n) {
+        var box = document.getElementById("config");
+        box.className="active";
+    }
+</script>
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="alert alert-info alert-dismissible" style="display: {{ display_control }};">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h4>{{ tips }}</h4>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div id="dialog">
+        <div class="box">
+            <form class="form-horizontal" action="{% url 'config_save' %}" method="POST">
+                      {% csrf_token %}
+                <div class="box-body">
+                  <span><b>脚本路径设置</b></span>
+                <div class="form-group">
+                  <label for="ansible_path" class="col-sm-2 control-label">Ansible路径:</label>
+
+                  <div class="col-sm-10">
+                      <input type="text" value="{{ a_path }}" id="ansible_path" name="ansible_path" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="roles_path" class="col-sm-2 control-label">Roles路径:</label>
+
+                  <div class="col-sm-10">
+                      <input type="text" value="{{ r_path }}" id="roles_path" name="roles_path" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group" >
+                  <label for="pbook_path" class="col-sm-2 control-label">playbook路径:</label>
+
+                  <div class="col-sm-10" >
+                    <input type="text" value="{{ p_path }}" id="pbook_path" name="pbook_path" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="scripts_path" class="col-sm-2 control-label">Scripts路径:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ s_path }}" id="scripts_path" name="scripts_path" style="width:450px;">
+                  </div>
+                </div>
+                <hr>
+                  <p><b>数据库设置</b></p>
+                <div class="form-group">
+                  <label for="engine" class="col-sm-2 control-label">Engine:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ engine }}" id="engine" name="engine" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="host" class="col-sm-2 control-label">Host:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ host }}" id="host" name="host" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="port" class="col-sm-2 control-label">Port:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ port }}" id="port" name="port" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="user" class="col-sm-2 control-label">User:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ user }}" id="user" name="user" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="password" class="col-sm-2 control-label">Password:</label>
+
+                  <div class="col-sm-10">
+                    <input type="password" value="{{ password }}" id="password" name="password" style="width:450px;">
+                  </div>
+                    </div>
+                <div class="form-group">
+                  <label for="database" class="col-sm-2 control-label">Database:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ database }}" id="database" name="database" style="width:450px;">
+                  </div>
+                </div>
+                    <hr>
+                  <p><b>Mongodb设置</b></p>
+                <div class="form-group">
+                  <label for="mongodb_ip" class="col-sm-2 control-label">Host:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ mongodb_ip }}" id="mongodb_ip" name="mongodb_ip" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mongodb_port" class="col-sm-2 control-label">Port:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ mongodb_port }}" id="mongodb_port" name="mongodb_port" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mongodb_user" class="col-sm-2 control-label">user:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ mongodb_user }}" id="mongodb_user" name="mongodb_user" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mongodb_pwd" class="col-sm-2 control-label">password:</label>
+
+                  <div class="col-sm-10">
+                    <input type="password" value="{{ mongodb_pwd }}" id="mongodb_pwd" name="mongodb_pwd" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mongodb_collection" class="col-sm-2 control-label">collection:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ mongodb_collection }}" id="mongodb_collection" name="mongodb_collection" style="width:450px;">
+                  </div>
+                </div>
+                <hr>
+                    <p><b>Reids</b></p>
+                <div class="form-group">
+                  <label for="_host" class="col-sm-2 control-label">Host:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ redis_host }}" id="redis_host" name="redis_host" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="redis_port" class="col-sm-2 control-label">Port:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ redis_port }}" id="redis_port" name="redis_port" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="redis_password" class="col-sm-2 control-label">password:</label>
+
+                  <div class="col-sm-10">
+                    <input type="password" value="{{ redis_password }}" id="redis_password" name="redis_password" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="redis_db" class="col-sm-2 control-label">db:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ redis_db }}" id="redis_db" name="redis_db" style="width:450px;">
+                  </div>
+                </div>
+                <hr>
+                <p><b>密钥设置</b></p>
+                <div class="form-group">
+                  <label for="token" class="col-sm-2 control-label">Token:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ token }}" id="token" name="token" style="width:450px;" readonly>
+                    <li class="btn btn-default" id="config" onclick="get_token();"><b>创建</b></li>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ssh_pwd" class="col-sm-2 control-label">ssh password:</label>
+
+                  <div class="col-sm-10">
+                    <input type="password" value="{{ ssh_pwd }}" id="ssh_pwd" name="ssh_pwd" style="width:450px;">
+                  </div>
+                </div>
+                    <hr>
+                <p><b>日志设置(重启生效)</b></p>
+                <div class="form-group">
+                  <label for="log" class="col-sm-2 control-label">日志路径:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ log_path }}" id="log_path" name="log_path" style="width:450px;" placeholder="默认路径程序目录下的logs">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="log" class="col-sm-2 control-label">日志级别:</label>
+
+                  <div class="col-sm-10">
+                    <select name="log_level" class="form-control" style="width:450px;">
+                            <option value="{{ log_level }}" selected="selected">{{ log_level }}</option>
+                        {% for key,value in all_level.items %}
+                            {% if key != log_level %}
+                            <option value="{{ key }}">{{ key }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <hr>
+{#                <p><b>webssh设置</b></p>#}
+                <div class="form-group" style="display: none">
+                  <label for="webssh_domain" class="col-sm-2 control-label">服务器地址:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ webssh_domain }}" id="webssh_domain" name="webssh_domain" style="width:450px;" placeholder="webssh访问域名设置">
+                  </div>
+                </div>
+
+                <hr>
+                    <p><b>LDAP</b></p>
+                <div class="form-group">
+                  <label for="ldap_enable" class="col-sm-2 control-label">ldap_enable:</label>
+
+                  <div class="col-sm-10">
+                    <select name="ldap_enable" class="form-control" style="width:450px;">
+                            <option value="{{ ldap_enable }}" selected="selected">{{ ldap_enable }}</option>
+                        {% for key in ldap_choice %}
+                            {% if key != ldap_enable %}
+                                <option value="{{ key }}">{{ key }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                  </div>
+                    </div>
+                <div class="form-group">
+                  <label for="ldap_server" class="col-sm-2 control-label">ldap_server:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ ldap_server }}" id="ldap_server" name="ldap_server" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ldap_port" class="col-sm-2 control-label">ldap_port:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ ldap_port }}" id="ldap_port" name="ldap_port" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="base_dn" class="col-sm-2 control-label">base_dn:</label>
+
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ base_dn }}" id="base_dn" name="base_dn" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ldap_manager" class="col-sm-2 control-label">ldap_manager:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ ldap_manager }}" id="ldap_manager" name="ldap_manager" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ldap_password" class="col-sm-2 control-label">ldap_password:</label>
+                  <div class="col-sm-10">
+                    <input type="password" value="{{ ldap_password }}" id="ldap_password" name="ldap_password" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ldap_filter" class="col-sm-2 control-label">ldap_filter:</label>
+
+                  <div class="col-sm-10">
+                    <select name="ldap_filter" class="form-control" style="width:450px;">
+                            <option value="{{ ldap_filter }}" selected="selected">{{ ldap_filter }}</option>
+                        {% for key in all_filter %}
+                            {% if key != ldap_filter %}
+                            <option value="{{ key }}">{{ key }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                  </div>
+                 </div>
+
+                <div class="form-group">
+                  <label for="require_group" class="col-sm-2 control-label">require_group:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ require_group }}" id="require_group" name="require_group" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="nickname" class="col-sm-2 control-label">nickname:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ nickname }}" id="nickname" name="nickname" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="is_active" class="col-sm-2 control-label">is_active:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ is_active }}" id="is_active" name="is_active" style="width:450px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="is_superuser" class="col-sm-2 control-label">is_superuser:</label>
+                  <div class="col-sm-10">
+                    <input type="text" value="{{ is_superuser }}" id="is_superuser" name="is_superuser" style="width:450px;">
+                  </div>
+                </div>
+
+              <!-- /.box-body -->
+              <div class="box-footer">
+                <button type="submit" onclick="checkSubmit()" class="btn btn-info pull-left" style="width: 120px"><b>保存(save)</b></button>
+                &nbsp;<div class="btn btn-info pull-left" style="width: 120px" onclick="return test1();"><b>重启(monster)</b></div>
+              </div>
+              <!-- /.box-footer -->
+                </div>
+            </form>
+        <div class="form-group">
+        </div>
+
+</div>
+</div>
+
+    </section>
+        <!-- /.content -->
+      </div>
+<script>
+function checkSubmit() {
+    if (!confirm("确定修改？")) {
+        window.event.returnValue = false;
+    }
+}
+</script>
+<script>
+function get_token() {
+    $.post('/config/token/',{csrfmiddlewaretoken: '{{ csrf_token }}'},function(data){
+        document.getElementById("token").value = data;
+    });
+}
+</script>
+<script>
+function loading(){
+    var index = layer.load(1, {
+    shade: [0.5,'#f4f4f4'] //0.1透明度的白色背景
+
+});
+}
+function test1(){
+            $.ajax({
+                type: "get",
+                url: "{% url 'job_backend_task' 'monster' 'restart' %}"
+            });
+    var index = layer.load(1, {
+    shade: [0.5,'#f4f4f4'] //0.1透明度的白色背景
+});
+    location.reload();
+}
+</script>
+{% endblock %}

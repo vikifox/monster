@@ -1,0 +1,50 @@
+<head>
+{% include 'head_script.html' %}
+{% include 'link_css.html' %}
+<script src="/static/js/echarts.min.js"></script>
+</head>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <!-- Main content -->
+    <section class="content" style="position:relative;">
+      <div class="box-info">
+        <div class="box-header with-border">
+          <h5 class="box-title">{{ hostname }}</h5>
+        </div>
+        <div class="box-body">
+        <div class="btn-group btn-group-lg">
+             <a href="{% url 'host_info' hostname 0 %}"><span class="btn btn-default .btn-flat">一小时</span></a>
+        </div>
+        <div class="btn-group btn-group-lg">
+             <a href="{% url 'host_info' hostname 1 %}"><span class="btn btn-default .btn-flat">三小时</span></a>
+        </div>
+        <div class="btn-group btn-group-lg">
+             <a href="{% url 'host_info' hostname 2 %}"><span class="btn btn-default .btn-flat">五小时</span></a>
+        </div>
+        <div class="btn-group btn-group-lg">
+             <a href="{% url 'host_info' hostname 3 %}"><span class="btn btn-default .btn-flat">一天</span></a>
+        </div>
+        <div class="btn-group btn-group-lg">
+             <a href="{% url 'host_info' hostname 4 %}"><span class="btn btn-default .btn-flat">三天</span></a>
+        </div>
+        <div class="btn-group btn-group-lg">
+             <a href="{% url 'host_info' hostname 5 %}"><span class="btn btn-default .btn-flat">一周</span></a>
+        </div>
+    <div id="cpu" style="width: 600px;height:220px;"></div>
+    <div id="memory" style="width: 600px;height:220px;"></div>
+    {% for p in partitions_len %}
+        <div id="disk{{ p }}" style="width: 600px;height:220px;"></div>
+    {% endfor %}
+    {% for n in nic_len %}
+        <div id="net{{ n }}" style="width: 600px;height:220px;">1234</div>
+    {% endfor %}
+
+        </div>
+      </div>
+<script type="text/javascript">
+var timing={{ timing }};  //通过URL传递元组数值调用7天数据
+</script>
+{% include 'monitor/get_data.html' %}
+</section>
+        <!-- /.content -->
+</div>

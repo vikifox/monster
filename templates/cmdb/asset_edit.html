@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% include 'link_css.html' %}
+    {% include 'head_script.html' %}
+</head>
+<body>
+<div class="content-wrapper">
+
+
+    <section class="content">
+
+<div id="dialog">
+
+
+        <div class="box">
+      <form action="{% url 'asset_edit' ids %}" method="post">
+        {% csrf_token %}
+        {{ af.as_p }}
+        <input type="submit" class="btn btn-primary" style="width: 60pt" value="保存">&nbsp;&nbsp;
+          <br>
+      </form>
+</div>
+</div>
+
+    </section>
+
+  </div>
+{#回传参数至父层#}
+<script type="text/javascript">
+        var index = parent.layer.getFrameIndex(window.name);
+        var success = {{ status }};
+        if ( success == '1' ) {
+            parent.$("#handle_status").val('1');
+              parent.layer.close(index);
+        } else if( success == '2' ) {
+            parent.$("#handle_status").val('2');
+            parent.layer.close(index);
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[Unit]
+Description=monster
+After=network.target
+
+[Service]
+WorkingDirectory=/var/opt/monster/main
+ExecStart=/usr/bin/gunicorn -c gunicorn_conf.py monster.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

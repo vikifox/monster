@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+{% load mytags %}
+{% block self_head_css_js %}
+    <script src="/static/layer/layer.js"></script>
+    <script src="/static/js/base.js"></script>
+    <script src="/static/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/plugins/datatables/dataTables.bootstrap.min.js"></script>
+    <script src="/static/plugins/datatables/dataTables.bootstrap.css"></script>
+
+{% endblock %}
+{% block content %}
+<script>
+    window.onload=init;
+    function init() {
+        showhide(2);
+    }
+    function showhide(n) {
+        var box = document.getElementById("cmdb");
+        box.className="active";
+        var box2 = document.getElementById("asset");
+        box2.className="active";
+    }
+    //node status
+    $(document).ready(function(){
+    $("span").each(function(){
+        if($(this).attr('id')){
+            var hostid = $(this).attr('id');
+            var host = hostid.substr(5);
+            $.get("/cmdb/nodestatus/"+host+"/",function(data,status){
+              if ( data == "1" ) {
+                  document.getElementById(hostid).style.color="green";
+                  document.getElementById(hostid).title="Online";
+                  {#                      $(this).css('display','block');#}
+
+              }
+              else if (data == "2") {
+                  document.getElementById(hostid).style.color="red";
+                  document.getElementById(hostid).title="Offline";
+              }
+  });
+        }
+  });
+});
+</script>
+<script>
+    $(document).ready(function(){
+        $('.asset_del').click(function(){
+            var row = $(this).closest('tr');
+            if (confirm("确定删除?")) {
+                $.get(
+                        $(this).attr('value'),
+                        {},
+                        function (data) {
+                            row.remove()
+                        }
+                )
+            }
+        });
+    });
+</script>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <form action="" method="post" id="asset_form">
+        {% csrf_token %}
+            <div class="box">
+                <div class="box-header">
+                    <div class="btn-group">
+						 <a id="assetadd" style="display: none" href="{% url 'asset_add' %}" class="btn btn-success">添加设备</a>
+                  </div>
+                <div class="btn-group">
+                            <label>
+                                <select name="idc" class="form-control m-b input-sm" onchange="change_info()">
+                                    <option value="">机房</option>
+                                    {% for idc in idc_info %}
+                                        {% ifequal idc.name idc_name %}
+                                            <option value="{{idc.name}}" selected> {{ idc.name|slice:":20" }}</option>
+                                        {% else %}
+                                            <option value="{{idc.name}}"> {{ idc.name|slice:":20" }}</option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label>
+                                <select name="group" class="form-control m-b input-sm" onchange="change_info()">
+                                    <option value="">主机组</option>
+                                    {% for asset_group in group_info %}
+                                        {% ifequal asset_group.name group_name %}
+                                            <option value="{{ asset_group.name }}" selected> {{ asset_group.name|slice:":20" }} </option>
+                                        {% else %}
+                                            <option value="{{ asset_group.name }}"> {{ asset_group.name|slice:":20" }} </option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label>
+                                <select name="asset_type" class="form-control m-b input-sm" onchange="change_info()">
+                                    <option value="">设备类型</option>
+                                    {% for type in asset_types %}
+                                        {% ifequal type.0|int2str asset_type %}
+                                            <option value="{{ type.0 }}" selected> {{ type.1 }}</option>
+                                        {% else %}
+                                            <option value="{{ type.0 }}"> {{ type.1 }}</option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label>
+                                <select name="status" class="form-control m-b input-sm" onchange="change_info()">
+                                    <option value="">设备状态</option>
+                                    {% for s in asset_status %}
+                                        {% ifequal s.0|int2str status %}
+                                            <option value="{{ s.0 }}" selected> {{ s.1 }}</option>
+                                        {% else %}
+                                            <option value="{{ s.0 }}"> {{ s.1 }}</option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+                <div class="btn-group">
+                        <a id="assetexport" style="display: none" href="#" onclick="return export_excel()" class="btn btn-info">&nbsp;导出&nbsp;</a>
+                        <a id="assetimport" style="display: none" href="#" class="btn btn-info" onclick="return asset_import()">&nbsp;导入&nbsp;</a>
+                </div>
+                    <div class="btn-group" style="padding-left: 0">
+                    </div>
+                        <div id="export"></div>
+                </div>
+
+                <!-- /.box-header -->
+            <div class="col-md-5">
+            </div>
+                <div class="box-body">
+
+                <label for="page_len">
+                    <select name="page_len" id="page_len" class="form-control m-b input-sm" onchange="change_info()">
+                        {% ifequal page_len '10' %}
+                            <option value="10" selected>10</option>
+                        {% else %}
+                            <option value="10">10</option>
+                        {% endifequal %}
+                        {% ifequal page_len '20' %}
+                            <option value="20" selected>20</option>
+                        {% else %}
+                            <option value="20">20</option>
+                        {% endifequal %}
+                        {% ifequal page_len '50' %}
+                            <option value="50" selected>50</option>
+                        {% else %}
+                            <option value="50">50</option>
+                        {% endifequal %}
+                        {% ifequal page_len '100' %}
+                            <option value="100" selected>100</option>
+                        {% else %}
+                            <option value="100">100</option>
+                        {% endifequal %}
+                        {% ifequal page_len '200' %}
+                            <option value="200" selected>200</option>
+                        {% else %}
+                            <option value="200">200</option>
+                        {% endifequal %}
+                    </select>
+                            </label>
+                             <div class="input-group inline-group col-md-3" style="float: right">
+                                <input type="text" class="form-control" id="search_input" name="keyword" value="{{ keyword }}" placeholder="Search">
+{#                                <input type="text" style="display: none">#}
+                                <div class="input-group-btn">
+                                    <button href="{% url 'cmdb' %}?search=true" type="button" class="btn btn-primary "  onclick="change_info()">
+                                        &nbsp;搜索&nbsp;
+                                    </button>
+                                </div>
+                        </div>
+                  <table class="table table-striped table-bordered" id="dataform">
+                      <thead>
+                        <tr>
+                            <th>
+                                <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')">
+                            </th>
+                                    <th>节点状态</th>
+                                    <th>主机名</th>
+                                    <th>管理IP</th>
+                                    <th>CPU</th>
+                                    <th>内存(G)</th>
+                                    <th>机房</th>
+                                    <th class="text-center">功能</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for host in assets.object_list %}
+                                    <tr class="even gradeX">
+                                        <td><input type="checkbox" id="id" class="i-checks" value="{{ host.id }}" name="id" /></td>
+                                        <td>
+                                            <span id="node_{{ host.id }}" class="fa fa-circle" aria-hidden="true" style="color: lightgray" data-toggle="tooltip" data-placement="right" title="Unknow"></span>
+                                        </td>
+                                        <td><a href="#"><li style="list-style-type:none" onclick="return detail(this.value)" value="{{ host.id }}"> {{ host.hostname }}</li></a></td>
+                                        <td>{{ host.ip }}</td>
+                                        <td>{{ host.cpu_num }}</td>
+                                        <td>{{ host.memory }}</td>
+                                        <td>{{ host.idc }}</td>
+                                        <td class="text-center" data-editable='false'>
+                                            <div align="center">
+                                            <a id="webssh" style="display: none; float: left; margin: auto;" class="btn btn-sm btn-info" target="_blank" href="{% url 'webssh' host.id %}">SSH</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <a id="assetedit" style="display: none; float:left; margin: auto;" href="#" class="btn btn-sm btn-info" onclick="return tanchu({{ host.id }})">编辑</a>
+{#                                            <a id="assetdel" value="{% url 'asset_del' %}?id={{ host.id }}" class="btn btn-sm btn-danger asset_del" style="display: none;float:left; margin: auto;">删除</a>#}
+                                            </div>
+                                        </td>
+                                        </tr>
+                                {% endfor %}
+                            </tbody>
+                  </table>
+                <div class="row" style="width: auto">
+                    {% include 'paginator.html' %}
+                </div>
+                    <div class="btn-group">
+                        <a id="assetdel" class="btn btn-danger" style="display: none"  name="del_button">删除设备</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+        <!-- /.content -->
+{#用于接收asset_edit.html中layui子层的传值#}
+<input id="handle_status" value="" hidden="hidden">
+</div>
+<script>
+  $(function () {
+    $("#example1").DataTable();
+    $('#dataform').DataTable({
+      "paging": false,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": false,
+      "bAutoWidth": false,
+      "bStateSave": true
+    });
+  });
+</script>
+<script>
+function checkSubmit() {
+    if (!confirm("确定删除？")) {
+        window.event.returnValue = false;
+    }
+}
+</script>
+<script>
+function tanchu(n){
+    layer.open({
+    type: 2,
+    title: '修改主机信息',
+    closeBtn: 1,
+    area: ['700px', '550px'],
+    shadeClose: true, //点击遮罩关闭
+    content: ['/cmdb/assetedit/' + n],
+{#    end:function(){#}
+{#            var handle_status = $("#handle_status").val();#}
+{#            if ( handle_status == '1' ) {#}
+{#                layer.msg('保存成功！',{#}
+{#                    icon: 1,#}
+{#                    time: 2000 //2秒关闭（如果不配置，默认是3秒）#}
+{#                });#}
+{#            } else if ( handle_status == '2' ) {#}
+{#                layer.msg('修改失败！',{#}
+{#                    icon: 2,#}
+{#                    time: 2000 //2秒关闭（如果不配置，默认是3秒）#}
+{#                });#}
+{#            }#}
+{#        }#}
+  });
+}
+</script>
+<script>
+function detail(n){
+    layer.open({
+    type: 2,
+    title: '主机信息',
+    closeBtn: 1,
+    area: ['700px', '550px'],
+    shadeClose: true, //点击遮罩关闭
+    content: ['/cmdb/asset/detail/' + n]
+  });
+}
+</script>
+<script>
+function asset_import(){
+    layer.open({
+    type: 2,
+    title: 'Asset Import',
+    closeBtn: 1,
+    area: ['450px', '350px'],
+    shadeClose: true, //点击遮罩关闭
+    content: ['/cmdb/assetimport/'],
+{#    end:function(){#}
+{#                layer.msg('导入成功！',{#}
+{#                    icon: 1,#}
+{#                    time: 2000 //2秒关闭（如果不配置，默认是3秒）#}
+{#                },function(){#}
+{#                    history.go(0);#}
+{#                });#}
+{#        }#}
+    end:function(){
+    var handle_status = $("#handle_status").val();
+    if ( handle_status == '1' ) {
+        layer.msg('导入成功！',{
+            icon: 1,
+            time: 2000 //2秒关闭（如果不配置，默认是3秒）
+        },function(){
+            parent.location.reload();
+        });
+    } else if ( handle_status == '2' ) {
+        layer.msg('导入失败！',{
+            icon: 2,
+            time: 2000 //2秒关闭（如果不配置，默认是3秒）
+        },function(){
+            parent.location.reload();
+        });
+    }
+}
+
+  });
+}
+</script>
+<script>
+    function change_info(){
+        var args = $("#asset_form").serialize();
+        window.location = "{% url 'cmdb' %}?" + args
+    }
+
+    function export_excel(){
+        var asset_id_all = getIDall();
+        if (asset_id_all == ''){
+            if(confirm('您没有勾选，是否导出全部信息？')){
+                var args = $("#asset_form").serialize();
+                window.location = "{% url 'cmdb' %}?export=all&" + args
+                }else{
+                    return false;
+                }
+            }else{
+                var args = $("#asset_form").serialize();
+                window.location = "{% url 'cmdb' %}?export=true&" + args
+            }
+    }
+    $("#search_input").keydown(function(e) {
+        if (e.keyCode == 13) {
+            change_info()
+        }
+        });
+</script>
+<script>
+    $('#assetdel').click(function () {
+        var asset_id_all = getIDall();
+        if (asset_id_all == ''){
+            alert("请至少选择一行!");
+            return false;
+        }
+        if (confirm("确定删除?")) {
+            $.ajax({
+                type: "post",
+                data: {asset_id_all: asset_id_all,csrfmiddlewaretoken: '{{ csrf_token }}'},
+                url: "{% url 'asset_del' %}?arg=batch",
+                success: function () {
+                    parent.location.reload();
+                }
+            });
+        }
+    });
+
+</script>
+<script>
+function node_status(args) {
+      $.get("/cmdb/nodestatus/"+args+"/",function(data,status){
+          var res = JSON.parse(data);
+          if ( res.data == "1" ) {
+              document.getElementById("node_"+res.hostname).style.color="green";
+          }
+          else if (res.data == "2") {
+              document.getElementById("node_"+res.hostname).style.color="red";
+
+          }
+      });
+}
+
+</script>
+
+{% endblock %}
